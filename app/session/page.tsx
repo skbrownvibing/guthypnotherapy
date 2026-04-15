@@ -2,13 +2,13 @@
 
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 
 type HomeData = {
   todaySession: { id: string; title: string; duration: number; audioUrl: string; focus: string };
 };
 
-export default function SessionPage() {
+function SessionContent() {
   const searchParams = useSearchParams();
   const resetOnly = searchParams.get('reset') === '1';
   const [session, setSession] = useState<HomeData['todaySession'] | null>(null);
@@ -51,7 +51,7 @@ export default function SessionPage() {
         <h1 className="text-xl font-semibold">{session.title}</h1>
         <p className="text-sm">{session.duration} min</p>
         <p className="text-sm">Starts with 2-minute breathing intro, then guided hypnotherapy.</p>
-        <p className="text-sm">Today’s focus: {session.focus}</p>
+        <p className="text-sm">Today's focus: {session.focus}</p>
         <audio controls className="w-full">
           <source src={session.audioUrl} />
         </audio>
@@ -70,5 +70,13 @@ export default function SessionPage() {
         </section>
       )}
     </main>
+  );
+}
+
+export default function SessionPage() {
+  return (
+    <Suspense fallback={<main>Loading...</main>}>
+      <SessionContent />
+    </Suspense>
   );
 }
